@@ -10,13 +10,13 @@ class ListModel extends ListEntity {
   @override
   final int taskCount;
   @override
-  final int completedTaskCount;
+  final int completed;
 
   ListModel({
     required this.name,
     required this.uuid,
     this.taskCount = 0,
-    this.completedTaskCount = 0,
+    this.completed = 0,
   }) : super( name: '', uuid: '');
 
   static ListModel get empty => ListModel( name: "", uuid: "");
@@ -26,8 +26,8 @@ class ListModel extends ListEntity {
       return ListModel(
         name: json["name"] ?? "",
         uuid: json["uuid"] ?? "",
-        taskCount: json["taskCount"] ?? 0,
-        completedTaskCount: json["completedTaskCount"] ?? 0,
+        taskCount: int.parse(json["taskCount"] ?? "0"),
+        completed: int.parse(json["completedTaskCount"] ?? "0"),
       );
     } catch (err) {
       throw ("Error in ListModel>frowJson: $err");

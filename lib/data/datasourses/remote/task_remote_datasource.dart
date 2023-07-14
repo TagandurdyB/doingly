@@ -12,7 +12,7 @@ import 'http_vars.dart';
 
 abstract class TaskRemoteDataSource {
   Future<ResponseModel> create(TaskModel task);
-  Future<Either<ResponseModel, List<TaskModel>>> readAll();
+  Future<Either<ResponseModel, List<List<TaskModel>>>> readAll();
   Future<Either<ResponseModel, List<TaskModel>>> readByList(String listUuid);
   Future<ResponseModel> update(String uuid, TaskModel task);
   Future<ResponseModel> delete(String uuid);
@@ -28,43 +28,52 @@ class TaskDataSourceImpl implements TaskRemoteDataSource {
   @override
   Future<ResponseModel> create(TaskModel task) async {
     print("Url:=${Uris.tasks}");
+    print("Task:=${task.toJson()}");
     const where = "TaskDataSourceImpl>create";
-    return HttpFuncs.tokenChecker(token, where, () async {
-      return await httpClient
-          .post(
-        Uris.tasks,
-        headers: Headers.bearer(token!),
-        body: json.encode(task.toJson()),
-      )
-          .then((response) {
-        HttpFuncs.tryerChecker(where, () async {
+    return HttpFuncs.errCatcher(
+        token,
+        where,
+        httpClient
+            .post(
+          Uris.tasks,
+          headers: Headers.bearer(token!),
+          body: json.encode(task.toJson()),
+        )
+            .then((response) {
           Map<String, dynamic> res = json.decode(response.body);
           print("$where response:=$res");
           return HttpFuncs.statusCodeChecker(
             ResponseModel(message: "Success", status: true),
             response.statusCode,
-          );
-        });
-      });
-    });
+          ) as ResponseModel;
+        }));
   }
 
   @override
-  Future<Either<ResponseModel, List<TaskModel>>> readAll() async {
+  Future<Either<ResponseModel, List<List<TaskModel>>>> readAll() async {
     print("Url:=${Uris.tasks}");
     const where = "TaskDataSourceImpl>readAll";
-    return HttpFuncs.errCatcher(token, where, () async {
-      final response = await httpClient.get(
-        Uris.tasks,
-        headers: Headers.bearer(token!),
-      );
-      List res = json.decode(response.body);
-      print("$where response:=$res");
-      return HttpFuncs.statusCodeChecker(
-        TaskModel.fromJsonList(res),
-        response.statusCode,
-      );
-    });
+    return HttpFuncs.errCatcher(
+        token,
+        where,
+        httpClient
+            .get(
+          Uris.tasks,
+          headers: Headers.bearer(token!),
+        )
+            .then((response) {
+          List res = json.decode(response.body);
+          print("$where response:=$res");
+          final result = HttpFuncs.statusCodeChecker(
+            TaskModel.fromJsonListAll(res),
+            response.statusCode,
+          );
+          try {
+            return Right<ResponseModel, List<List<TaskModel>>>(result);
+          } catch (e) {
+            return Left<ResponseModel, List<List<TaskModel>>>(result);
+          }
+        }));
   }
 
   @override
@@ -72,59 +81,72 @@ class TaskDataSourceImpl implements TaskRemoteDataSource {
       String listUuid) async {
     print("Url:=${Uris.taskFromList(listUuid)}");
     const where = "TaskDataSourceImpl>readByList";
-    return HttpFuncs.errCatcher(token, where, () async {
-      final response = await httpClient.get(
-        Uris.taskFromList(listUuid),
-        headers: Headers.bearer(token!),
-      );
-      List res = json.decode(response.body);
-      print("$where response:=$res");
-      return HttpFuncs.statusCodeChecker(
-        TaskModel.fromJsonList(res),
-        response.statusCode,
-      );
-    });
+    return HttpFuncs.errCatcher(
+        token,
+        where,
+        httpClient
+            .get(
+          Uris.taskFromList(listUuid),
+          headers: Headers.bearer(token!),
+        )
+            .then((response) {
+          List res = json.decode(response.body);
+          print("$where response:=$res");
+          final result = HttpFuncs.statusCodeChecker(
+            TaskModel.fromJsonList(res),
+            response.statusCode,
+          );
+          try {
+            return Right<ResponseModel, List<TaskModel>>(result);
+          } catch (e) {
+            return Left<ResponseModel, List<TaskModel>>(result);
+          }
+        }));
   }
 
   @override
-  Future<ResponseModel> update(String uuid, TaskModel task) async {
+  Future<ResponseModel> update(String uuid, TaskModel obj) async {
     print("Url:=${Uris.taskChange(uuid)}");
-    const where = "TaskDataSourceImpl>update";
-    return HttpFuncs.tokenChecker(token, where, () async {
-      return await httpClient
-          .put(
-        Uris.taskChange(uuid),
-        headers: Headers.bearer(token!),
-        body: task.toJson(),
-      )
-          .then((response) {
-        HttpFuncs.tryerChecker(where, () async {
+    const where = "ListDataSourceImpl>update";
+    return HttpFuncs.errCatcher(
+        token,
+        where,
+        httpClient
+            .put(
+          Uris.taskChange(uuid),
+          headers: Headers.bearer(token!),
+          body: json.encode(obj.toJson()),
+        )
+            .then((response) {
           Map<String, dynamic> res = json.decode(response.body);
           print("$where response:=$res");
           return HttpFuncs.statusCodeChecker(
             ResponseModel.frowJson(res),
             response.statusCode,
-          );
-        });
-      });
-    });
+          ) as ResponseModel;
+        }));
   }
 
   @override
   Future<ResponseModel> delete(String uuid) async {
     print("Url:=${Uris.taskChange(uuid)}");
     const where = "TaskDataSourceImpl>delete";
-    return HttpFuncs.errCatcher(token, where, () async {
-      final response = await httpClient.delete(
+    return HttpFuncs.errCatcher(
+      token,
+      where,
+      httpClient
+          .delete(
         Uris.taskChange(uuid),
         headers: Headers.bearer(token!),
-      );
-      Map<String, dynamic> res = json.decode(response.body);
-      print("$where response:=$res");
-      return HttpFuncs.statusCodeChecker(
-        ResponseModel.frowJson(res),
-        response.statusCode,
-      );
-    });
+      )
+          .then((response) {
+        Map<String, dynamic> res = json.decode(response.body);
+        print("$where response:=$res");
+        return HttpFuncs.statusCodeChecker(
+          ResponseModel.frowJson(res),
+          response.statusCode,
+        ) as ResponseModel;
+      }),
+    );
   }
 }

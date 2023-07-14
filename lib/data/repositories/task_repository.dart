@@ -19,7 +19,7 @@ class TaskRepositoryImpl implements TaskRepository {
   }
 
   @override
-  Future<Either<ResponseEntity, List<TaskEntity>>> readAll() async {
+  Future<Either<ResponseEntity, List<List<TaskEntity>>>> readAll() async {
     return await remoteDataSource.readAll();
   }
 

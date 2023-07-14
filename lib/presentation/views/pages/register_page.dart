@@ -6,11 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 
 import '../../../config/routes/my_rout.dart';
+import '../../../config/services/keyboard.dart';
 import '../../../config/vars/constants.dart';
+import '../../providers/theme_provider.dart';
 import '../../providers/user_provider.dart';
 import '../widgets/ReadyInput/login_arzan_input.dart';
 import '../widgets/ReadyInput/ready_input_base.dart';
 import '../widgets/btns_group.dart';
+import '../widgets/my_pop_widget.dart';
 
 class RegisterPage extends StatelessWidget {
   RegisterPage({super.key});
@@ -20,15 +23,24 @@ class RegisterPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     this.context = context;
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Sign Up"),
-        centerTitle: true,
+    return WillPopScope(
+      onWillPop: () async {
+        final themeP = ThemeP.of(context, listen: false);
+        if (themeP.isLoding) {
+          themeP.changeIsLoading(false);
+        }
+        return true;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text("Sign Up"),
+          centerTitle: true,
+        ),
+        body: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.all(16),
+            child: buildContent()),
       ),
-      body: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.all(16),
-          child: buildContent()),
     );
   }
 
@@ -86,6 +98,8 @@ class RegisterPage extends StatelessWidget {
   }
 
   void _next() {
+    Keyboard.close(context);
+    MyPopUpp.popLoading(context);
     UserP.of(context, listen: false)
         .signUp(UserEntity(
       name: RIBase.getText(Tags.rIUserName),
@@ -93,11 +107,14 @@ class RegisterPage extends StatelessWidget {
       email: RIBase.getText(Tags.rIEmail),
     ))
         .then((response) {
-      TostService.message(response.message, response.status);
-      if (response.status) {
-        Future.delayed(const Duration(seconds: 3))
-            .then((value) => Navigator.popAndPushNamed(context, Rout.home));
-      }
+      // TostService.message(response.message, response.status);
+      // if (response.status) {
+      //   Future.delayed(const Duration(seconds: 3))
+      //       .then((value) => Navigator.popAndPushNamed(context, Rout.home));
+      // }
+      MyPopUpp.popMessage(context, () {
+        Navigator.popAndPushNamed(context, Rout.home);
+      }, response.message, !response.status);
     });
   }
 

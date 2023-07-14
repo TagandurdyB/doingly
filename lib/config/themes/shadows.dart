@@ -10,9 +10,9 @@ class ShadowsLight {
     BoxShadow(color: Colors.grey[800]!, blurRadius: 10, spreadRadius: 0.5)
   ];
 
-  List<BoxShadow> discount = [
+  List<BoxShadow> list = [
     const BoxShadow(
-        color: Color(0xffEDEDED),
+        color: Color.fromARGB(195, 229, 226, 226),
         offset: Offset(0, 3),
         blurRadius: 4,
         spreadRadius: 0.5)

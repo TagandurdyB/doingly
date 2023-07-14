@@ -36,13 +36,13 @@ class ThemeP extends ChangeNotifier {
           : ThemeMode.dark;
 
   void changeSystem(bool val) {
-    _save(Tags.themeSystem,val);
+    _save(Tags.themeSystem, val);
     _isSystem = val;
     notifyListeners();
   }
 
   void changeLight(bool val) {
-    _save(Tags.themeLight,val);
+    _save(Tags.themeLight, val);
     _isLight = val;
     notifyListeners();
   }
@@ -51,7 +51,7 @@ class ThemeP extends ChangeNotifier {
     try {
       _isSystem = !_isSystem;
       notifyListeners();
-      _save(Tags.themeSystem,_isSystem );
+      _save(Tags.themeSystem, _isSystem);
     } catch (err) {
       print("Error on data Theme Provider tongleSystem:$err");
       notifyListeners();
@@ -62,7 +62,7 @@ class ThemeP extends ChangeNotifier {
     try {
       _isLight = !_isLight;
       notifyListeners();
-      _save(Tags.themeLight,_isLight);
+      _save(Tags.themeLight, _isLight);
     } catch (err) {
       print("Error on data Theme Provider tongleMode:$err");
       notifyListeners();
@@ -78,6 +78,22 @@ class ThemeP extends ChangeNotifier {
 
   bool? _read(String tag) => myBase.get(tag);
 
+//PopUp==================================
+  bool _isLoading = false;
+  bool get isLoding => _isLoading;
+  void changeIsLoading(bool isLoad) {
+    _isLoading = isLoad;
+    notifyListeners();
+  }
+
+  bool _warningOk = false;
+  bool get warningOk => _warningOk;
+  void changeWarning(bool isWar) {
+    _warningOk = isWar;
+    notifyListeners();
+  }
+
+//==
   static ThemeP of(BuildContext context, {listen = true}) =>
       Provider.of<ThemeP>(context, listen: listen);
 }

@@ -1,9 +1,7 @@
-import 'package:either_dart/either.dart';
 
 import '../../../config/errors/error_messages.dart';
 import '/data/models/response_model.dart';
 
-import '../../../config/vars/constants.dart';
 
 class Uris {
 //Domain========================================================================
@@ -36,15 +34,15 @@ class Headers {
 
   static Map<String, String> bearer(String token) => {
         'Content-Type': 'application/json',
-        'Bearer': token,
+        'Authorization': "Bearer $token",
       };
 }
 
 class HttpFuncs {
-  static errCatcher(String? token, String location, Function func) {
+  static errCatcher(String? token, String location, dynamic obj) {
     if (token != null) {
       try {
-        return func;
+        return obj;
       } catch (err) {
         throw "$location ERROR : $err";
       }
@@ -52,16 +50,16 @@ class HttpFuncs {
     throw "$location I need Token";
   }
 
-  static tokenChecker(String? token, String location, Function func) {
+  static tokenChecker(String? token, String location, dynamic obj) {
     if (token != null) {
-      return func;
+      return obj;
     }
     throw "$location I need Token";
   }
 
-  static tryerChecker(String location, dynamic func) {
+  static tryerChecker(String location, dynamic obj) {
     try {
-      return func;
+      return obj;
     } catch (err) {
       throw "$location ERROR : $err";
     }

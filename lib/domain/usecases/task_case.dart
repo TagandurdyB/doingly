@@ -11,7 +11,7 @@ class TaskCase {
   Future<ResponseEntity> create(TaskEntity task) async =>
       await repository.create(task);
 
-  Future<Either<ResponseEntity, List<TaskEntity>>> readAll() async =>
+  Future<Either<ResponseEntity, List<List<TaskEntity>>>> readAll() async =>
       await repository.readAll();
 
   Future<Either<ResponseEntity, List<TaskEntity>>> read(

@@ -15,7 +15,7 @@ class Rout {
 
   static Map<String, Widget Function(dynamic)> pages = {
     logo: (context) => const LogoPage(),
-    home: (context) => const HomePage(),
+    home: (context) =>  const HomePage(),
     register: (context) =>  RegisterPage(),
     login: (context) =>  LoginPage(),
     disconnect: (context) => PageDisconnect(),

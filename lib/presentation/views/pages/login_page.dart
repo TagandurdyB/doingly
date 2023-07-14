@@ -3,13 +3,14 @@
 import 'package:flutter/material.dart';
 
 import '../../../config/routes/my_rout.dart';
-import '../../../config/services/tost_service.dart';
+import '../../../config/services/keyboard.dart';
 import '../../../config/vars/constants.dart';
 import '../../../domain/entities/user_entity.dart';
 import '../../providers/user_provider.dart';
 import '../widgets/ReadyInput/login_arzan_input.dart';
 import '../widgets/ReadyInput/ready_input_base.dart';
 import '../widgets/btns_group.dart';
+import '../widgets/my_pop_widget.dart';
 
 class LoginPage extends StatelessWidget {
   LoginPage({super.key});
@@ -75,17 +76,22 @@ class LoginPage extends StatelessWidget {
   }
 
   void _next() {
+    Keyboard.close(context);
+    MyPopUpp.popLoading(context);
     UserP.of(context, listen: false)
         .login(UserEntity(
       name: RIBase.getText(Tags.rIUserName),
       pass: RIBase.getText(Tags.rIPass),
     ))
         .then((response) {
-      TostService.message(response.message, response.status);
-      if (response.status) {
-        Future.delayed(const Duration(seconds: 3))
-            .then((value) => Navigator.popAndPushNamed(context, Rout.home));
-      }
+      MyPopUpp.popMessage(context, () {
+        Navigator.popAndPushNamed(context, Rout.home);
+      }, response.message, !response.status);
+      // TostService.message(response.message, response.status);
+      // if (response.status) {
+      //   Future.delayed(const Duration(seconds: 3))
+      //       .then((value) => Navigator.popAndPushNamed(context, Rout.home));
+      // }
     });
   }
 

@@ -24,6 +24,27 @@ class ColorsLight {
 //=======================================================================
   Color shimmerBg = Colors.grey.withOpacity(0.25);
   Color shimmerLine = Colors.grey.withOpacity(0.6);
+
+  List<Color> rainBowColors = [
+    Colors.red,
+    Colors.purple,
+    Colors.orange,
+    Colors.blue,
+    Colors.green,
+  ];
+
+  // void get suffleRainBow => rainBowColors.shuffle();
+
+  Color persent(double persentage) {
+    final int div = 100 ~/ rainBowColors.length;
+    final int index = (persentage-1) ~/ div;
+    return rainBowColors[index];
+  }
+
+  Color get rainbow {
+    // suffleRainBow;
+    return rainBowColors[1];
+  }
 }
 
 class ColorsDark extends ColorsLight {

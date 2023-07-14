@@ -38,9 +38,9 @@ class TaskModel extends TaskEntity {
 
   factory TaskModel.frowJson(Map<String, dynamic> json) {
     try {
-      final Map<String, dynamic>? list = json["list"];
+      final Map<String, dynamic>? list = json["List"];
       return TaskModel(
-        name: json["name"] ?? "null",
+        name: json["text"] ?? "null",
         uuid: json["uuid"] ?? "null",
         completed: json["completed"] ?? false,
         list: list != null ? ListModel.frowJson(list) : null,
@@ -53,9 +53,27 @@ class TaskModel extends TaskEntity {
   static List<TaskModel> fromJsonList(List jsonList) =>
       jsonList.map((json) => TaskModel.frowJson(json)).toList();
 
+  static List<List<TaskModel>> fromJsonListAll(List jsonList) {
+    Map<String, List<TaskModel>> map = {};
+    String listName = "";
+    for (int i = 0; i < jsonList.length; i++) {
+      listName = jsonList[i]["List"]["name"];
+      print("listName := $listName");
+      if (map[listName] != null) {
+        print("here 1");
+        map[listName]!.add(TaskModel.frowJson(jsonList[i]));
+      } else {
+        print("here 2");
+        map.addAll({listName: [TaskModel.frowJson(jsonList[i])]});
+      }
+        print("Map := $map");
+    }
+    return map.values.toList();
+  }
+
   Map<String, dynamic> toJson() => {
-        "name": name,
-        "uuid": uuid,
+        "text": name,
+        "listUuid": uuid,
         "completed": completed,
       };
 }
